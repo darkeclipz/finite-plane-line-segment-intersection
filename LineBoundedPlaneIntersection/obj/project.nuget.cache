@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "oWANHhILPB8vJlYCKDB6a8kLirwM6CtgyjmHYhnPsbzzQT0TdgWz4/ZgQ49auI39fnrEhkzHSSTcCe1POWf1+A==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Isomorphism\\source\\repos\\LineBoundedPlaneIntersection\\LineBoundedPlaneIntersection\\LineBoundedPlaneIntersection.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Isomorphism\\.nuget\\packages\\mathnet.numerics\\4.15.0\\mathnet.numerics.4.15.0.nupkg.sha512"
+  ],
+  "logs": []
+}
