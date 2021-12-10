@@ -12,13 +12,19 @@ namespace LineBoundedPlaneIntersection
             Vector3 v = new(0, 1, 0);
             Plane plane = new(new(0, 0, 0.25f), u, v);
          
-            Vector3 a = new(0.5f, 0.5f, 1.0f);
-            Vector3 b = new(0.5f, 0.5f, -1.0f);
+            Vector3 a = new(0.5f, 0.5f, 0.5f);
+            Vector3 b = new(0.5f, 0.5f, 1.0f);
             LineSegment line = new(a, b);
 
             IntersectHit hit = Intersect.FindPoint(plane, line);
 
             Console.WriteLine(hit);
+
+
+            Triangle triangle = new(new(0, 0, 0), new(1, 0, 0), new(0, 1, 0));
+            IntersectHit tHit = Intersect.FindPoint(triangle, line);
+
+            Console.WriteLine(tHit);
         }
     }
 
@@ -57,9 +63,59 @@ namespace LineBoundedPlaneIntersection
 
             return new(Vector3.Zero, IsHit: false, Reason: "Line is parallel to the plane.");
         }
+
+        // https://stackoverflow.com/a/42752998
+        public static IntersectHit FindPoint(Triangle triangle, LineSegment line)
+        {
+            Vector3 RD = Vector3.Normalize(line.B - line.A);
+
+            Vector3 A = triangle.A;
+            Vector3 B = triangle.B;
+            Vector3 C = triangle.C;
+
+            Vector3 E1 = B - A;
+            Vector3 E2 = C - A;
+            Vector3 N = Vector3.Cross(E1, E2);
+            float det = -Vector3.Dot(RD, N);
+            float invdet = 1.0f / det;
+            Vector3 AO = line.A - A;
+            Vector3 DAO = Vector3.Cross(AO, RD);
+            float u = Vector3.Dot(E2, DAO) * invdet;
+            float v = -Vector3.Dot(E1, DAO) * invdet;
+            float t = Vector3.Dot(AO, N) * invdet;
+            float eps = 1e-6f;
+            bool isHit = Math.Abs(det) >= eps && u >= 0.0 && v >= 0.0 && (u + v) <= 1.0;
+
+            if(!isHit)
+            {
+                return new(Vector3.Zero, IsHit: false, Reason: "No hit.");
+            }
+
+            Vector3 P = line.A + t * RD;
+
+            if (!line.IsPointOnLineSegment(P))
+            {
+                return new(Vector3.Zero, IsHit: false, Reason: "Point lies outside of the line segment.");
+            }
+
+            return new(P, IsHit: true);
+        }
     }
 
     record IntersectHit(Vector3 Point, bool IsHit, string Reason = "");
+
+    class Triangle
+    {
+        public Vector3 A { get; set; }
+        public Vector3 B { get; set; }
+        public Vector3 C { get; set; }
+        public Triangle(Vector3 a, Vector3 b, Vector3 c)
+        {
+            A = a;
+            B = b;
+            C = c;
+        }
+    }
 
     class Plane
     {
